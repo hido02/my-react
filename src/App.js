@@ -1,74 +1,81 @@
 import React, { useState } from 'react';
-import { useImmer } from 'use-immer';
+import { useReducer } from 'react';
+import AddTask from './AddTask.js';
+import TaskList from './TaskList.js';
 
-let nextId = 3;
-const initialList = [
-  { id: 0, title: 'Big Bellies', seen: false },
-  { id: 1, title: 'Lunar Landscape', seen: false },
-  { id: 2, title: 'Terracotta Army', seen: true },
-];
-
-export default function BucketList() {
-  const [myList, updateMyList] = useImmer(
-    initialList
-  );
-  const [yourList, updateYourList] = useImmer(
-    initialList
+export default function TaskApp() {
+  const [tasks, dispatch] = useReducer(
+    tasksReducer,
+    initialTasks
   );
 
-  function handleToggleMyList(id, nextSeen) {
-    updateMyList(draft => {
-      const artwork = draft.find(a =>
-        a.id === id
-      );
-      artwork.seen = nextSeen;
+  function handleAddTask(text) {
+    dispatch({
+      type: 'added',
+      id: nextId++,
+      text: text,
     });
   }
 
-  function handleToggleYourList(artworkId, nextSeen) {
-    updateYourList(draft => {
-      const artwork = draft.find(a =>
-        a.id === artworkId
-      );
-      artwork.seen = nextSeen;
+  function handleChangeTask(task) {
+    dispatch({
+      type: 'changed',
+      task: task
+    });
+  }
+
+  function handleDeleteTask(taskId) {
+    dispatch({
+      type: 'deleted',
+      id: taskId
     });
   }
 
   return (
     <>
-      <h1>Art Bucket List</h1>
-      <h2>My list of art to see:</h2>
-      <ItemList
-        artworks={myList}
-        onToggle={handleToggleMyList} />
-      <h2>Your list of art to see:</h2>
-      <ItemList
-        artworks={yourList}
-        onToggle={handleToggleYourList} />
+      <h1>Prague itinerary</h1>
+      <AddTask
+        onAddTask={handleAddTask}
+      />
+      <TaskList
+        tasks={tasks}
+        onChangeTask={handleChangeTask}
+        onDeleteTask={handleDeleteTask}
+      />
     </>
   );
 }
 
-function ItemList({ artworks, onToggle }) {
-  return (
-    <ul>
-      {artworks.map(artwork => (
-        <li key={artwork.id}>
-          <label>
-            <input
-              type="checkbox"
-              checked={artwork.seen}
-              onChange={e => {
-                onToggle(
-                  artwork.id,
-                  e.target.checked
-                );
-              }}
-            />
-            {artwork.title}
-          </label>
-        </li>
-      ))}
-    </ul>
-  );
+function tasksReducer(tasks, action) { // 리듀서: 모든 상태 업데이트를 통합
+  switch (action.type) {
+    case 'added': {
+      return [...tasks, {
+        id: action.id,
+        text: action.text,
+        done: false
+      }];
+    }
+    case 'changed': {
+      return tasks.map(t => {
+        if (t.id === action.task.id) {
+          return action.task;
+        } else {
+          return t;
+        }
+      });
+    }
+    case 'deleted': {
+      return tasks.filter(t => t.id !== action.id);
+    }
+    default: {
+      throw Error('Unknown action: ' + action.type);
+    }
+  }
 }
+
+let nextId = 3;
+const initialTasks = [
+  { id: 0, text: 'Visit Kafka Museum', done: true },
+  { id: 1, text: 'Watch a puppet show', done: false },
+  { id: 2, text: 'Lennon Wall pic', done: false }
+];
