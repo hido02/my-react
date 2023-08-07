@@ -1,11 +1,25 @@
-import React from "react";
-import "./style.css";
+import React from 'react';
+import './style.css';
 
 export default function App() {
+  function Item(props) {
+    return <li>{props.message}</li>;
+  }
+
+  function TodoList() {
+    const todos = ['finish doc', 'submit pr', 'nag dan to review'];
+    return (
+      <ul>
+        {todos.map((message) => (
+          <Item key={message} message={message} />
+        ))}
+      </ul>
+    );
+  }
+
   return (
     <div>
-      <h1>Hello StackBlitz!</h1>
-      <p>Start editing to see some magic happen :)</p>
+      <TodoList />
     </div>
   );
 }
