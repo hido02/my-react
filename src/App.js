@@ -1,20 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function App() {
-  function Example() {
-    return (
-      <input
-        onFocus={(e) => {
-          console.log('Focused on input');
-        }}
-        placeholder="onFocus is triggered when you click this input."
-      />
-    )
+  function FriendStatus(props) {
+    const [isOnline, setIsOnline] = useState(null);
+  
+    function handleStatusChange(status) {
+      setIsOnline(status.isOnline);
+    }
+  
+    useEffect(() => {
+      ChatAPI.subscribeToFriendStatus(props.friend.id, handleStatusChange);
+      return () => {
+        ChatAPI.unsubscribeFromFriendStatus(props.friend.id, handleStatusChange);
+      };
+    });
+  
+    if (isOnline === null) {
+      return 'Loading...';
+    }
+    return isOnline ? 'Online' : 'Offline';
   }
   
   return (
     <>
-    <Example />
+    <FriendStatus />
     </>
   );
 }
