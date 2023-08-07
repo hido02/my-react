@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 
-function YourComponent() {
-  const [words, setWords] = useState([]);
-
-  const handleClick = () => {
-    setWords(prevWords => [...prevWords, 'marklar']);
-  };
-
+function App() {
+  function Example() {
+    return (
+      <input
+        onFocus={(e) => {
+          console.log('Focused on input');
+        }}
+        placeholder="onFocus is triggered when you click this input."
+      />
+    )
+  }
+  
   return (
-    <div>
-      <button onClick={handleClick}>Add Word</button>
-      <ul>
-        {words.map((word, index) => (
-          <li key={index}>{word}</li>
-        ))}
-      </ul>
-    </div>
+    <>
+    <Example />
+    </>
   );
 }
 
-export default YourComponent;
+export default App;
