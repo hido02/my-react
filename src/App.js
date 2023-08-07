@@ -1,81 +1,29 @@
-import React from 'react';
-import { useImmer } from 'use-immer';
+import React, { useState } from 'react';
 
-export default function Form() {
-  const [person, updatePerson] = useImmer({
-    name: 'Niki de Saint Phalle',
-    artwork: {
-      title: 'Blue Nana',
-      city: 'Hamburg',
-      image: 'https://i.imgur.com/Sd1AgUOm.jpg',
-    }
-  });
+let nextId = 0;
 
-  function handleNameChange(e) {
-    updatePerson(draft => {
-      draft.name = e.target.value;
-    });
-  }
-
-  function handleTitleChange(e) {
-    updatePerson(draft => {
-      draft.artwork.title = e.target.value;
-    });
-  }
-
-  function handleCityChange(e) {
-    updatePerson(draft => {
-      draft.artwork.city = e.target.value;
-    });
-  }
-
-  function handleImageChange(e) {
-    updatePerson(draft => {
-      draft.artwork.image = e.target.value;
-    });
-  }
+export default function List() {
+  const [name, setName] = useState('');
+  const [artists, setArtists] = useState([]);
 
   return (
     <>
-      <label>
-        Name:
-        <input
-          value={person.name}
-          onChange={handleNameChange}
-        />
-      </label>
-      <label>
-        Title:
-        <input
-          value={person.artwork.title}
-          onChange={handleTitleChange}
-        />
-      </label>
-      <label>
-        City:
-        <input
-          value={person.artwork.city}
-          onChange={handleCityChange}
-        />
-      </label>
-      <label>
-        Image:
-        <input
-          value={person.artwork.image}
-          onChange={handleImageChange}
-        />
-      </label>
-      <p>
-        <i>{person.artwork.title}</i>
-        {' by '}
-        {person.name}
-        <br />
-        (located in {person.artwork.city})
-      </p>
-      <img 
-        src={person.artwork.image} 
-        alt={person.artwork.title}
+      <h1>Inspiring sculptors:</h1>
+      <input
+        value={name}
+        onChange={e => setName(e.target.value)}
       />
+      <button onClick={() => {
+        setArtists([
+          ...artists,
+          { id: nextId++, name: name }
+        ]);
+      }}>Add</button>
+      <ul>
+        {artists.map(artist => (
+          <li key={artist.id}>{artist.name}</li>
+        ))}
+      </ul>
     </>
   );
 }
