@@ -1,17 +1,48 @@
-import React, { useSyncExternalStore } from 'react';
-import { todosStore } from './todoStore.js';
+import React, { createContext, useContext } from 'react';
 
-export default function TodosApp() {
-  const todos = useSyncExternalStore(todosStore.subscribe, todosStore.getSnapshot);
+const ThemeContext = createContext(null);
+
+export default function MyApp() {
   return (
-    <>
-      <button onClick={() => todosStore.addTodo()}>Add todo</button>
-      <hr />
-      <ul>
-        {todos.map(todo => (
-          <li key={todo.id}>{todo.text}</li>
-        ))}
-      </ul>
-    </>
+    <ThemeContext.Provider value="dark">
+      <Form />
+    </ThemeContext.Provider>
   );
+}
+
+function Form() {
+  return (
+    <Panel title="Welcome">
+      <Button>Sign up</Button>
+      <Button>Log in</Button>
+      <ThemeContext.Provider value="light">
+        <Footer />
+      </ThemeContext.Provider>
+    </Panel>
+  );
+}
+
+function Footer() {
+  return (
+    <footer>
+      <Button>Settings</Button>
+    </footer>
+  );
+}
+
+function Panel({ title, children }) {
+  const theme = useContext(ThemeContext);
+  const className = 'panel-' + theme;
+  return (
+    <section className={className}>
+      {title && <h1>{title}</h1>}
+      {children}
+    </section>
+  );
+}
+
+function Button({ children }) {
+  const theme = useContext(ThemeContext);
+  const className = 'button-' + theme;
+  return <button className={className}>{children}</button>;
 }
